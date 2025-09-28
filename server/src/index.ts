@@ -18,7 +18,7 @@ interface ChartDataPoint {
 // --- Initialize Express App ---
 const app = express();
 // --- DEPLOYMENT CHANGE: Use Render's port, with a fallback for local dev ---
-const port = process.env.PORT || 5000;
+const port = Number(process.env.PORT) || 5000;
 
 // --- Middleware ---
 // Allow requests from any origin. For better security, you could restrict
@@ -88,6 +88,6 @@ app.get('/api/data', (req: Request, res: Response) => {
 
 // --- Start the server ---
 // --- DEPLOYMENT CHANGE: Removed hardcoded "0.0.0.0" and port ---
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Server running on port ${port}`);
 });

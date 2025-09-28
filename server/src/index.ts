@@ -17,16 +17,17 @@ interface ChartDataPoint {
 
 // --- Initialize Express App ---
 const app = express();
-const port = 5000;
+// --- DEPLOYMENT CHANGE: Use Render's port, with a fallback for local dev ---
+const port = process.env.PORT || 5000;
 
 // --- Middleware ---
+// Allow requests from any origin. For better security, you could restrict
+// this to your Vercel URL in production.
 app.use(cors());
 app.use(express.json());
 
 // --- API Route ---
 app.get('/api/data', (req: Request, res: Response) => {
-  // console.log('--- /api/data endpoint called ---');
-
   const { company, metric } = req.query;
 
   if (!company || !metric) {
@@ -36,45 +37,27 @@ app.get('/api/data', (req: Request, res: Response) => {
   }
 
   try {
+    // This path assumes your 'data' folder is one level above your 'src' folder
+    // Project structure should be:
+    // /server
+    //   /data
+    //     - data.xls
+    //   /src
+    //     - index.ts
     const filePath = path.join(__dirname, '../data/data.xls');
-    console.log('Reading Excel file from:', filePath);
-
     const workbook = xlsx.readFile(filePath);
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
 
-    // --- Parse as JSON (headers from first row are used as keys) ---
     const jsonData: any[] = xlsx.utils.sheet_to_json(worksheet);
 
     if (jsonData.length == 0) {
-      console.log('No data found in the Excel sheet.');
+      return res.status(404).json({ error: 'No data found in source file.' });
     }
-
-
-    // console.log('Row count:', jsonData.length);
-    // if (jsonData.length > 0) {
-    //   console.log('Parsed row sample:', jsonData[0]);
-    // }
-
-
-    // const availableTickers = [...new Set(jsonData.map(r => `"${r['Ticker']}"`))];
-    // const availableFields = [...new Set(jsonData.map(r => `"${r['Field']}"`))];
-    // console.log('Available Tickers:', availableTickers);
-    // console.log('Available Fields:', availableFields);
-
-
-    // if (jsonData.length > 0) {
-    //   console.log('Parsed headers:', Object.keys(jsonData[0]));
-    // }
 
     const normalize = (val: any) =>
       val ? val.toString().trim().toLowerCase() : '';
 
-    // console.log(
-    //   `Searching for Company: ${normalize(company)}, Metric: ${normalize(metric)}`
-    // );
-
-    // --- FIX: Match against 'Ticker' and 'Field' ---
     const targetRow = jsonData.find(
       (row) =>
         normalize(row['Ticker']) === normalize(company) &&
@@ -82,21 +65,11 @@ app.get('/api/data', (req: Request, res: Response) => {
     );
 
     if (!targetRow) {
-      console.warn(
-        `No data found for Company: ${company}, Metric: ${metric}`
-      );
-      // const availableTickers = [...new Set(jsonData.map((r) => r['Ticker']))];
-      // const availableFields = [...new Set(jsonData.map((r) => r['Field']))];
-      // console.log('Available Tickers:', availableTickers);
-      // console.log('Available Fields:', availableFields);
       return res
         .status(404)
         .json({ error: 'Data not found for the selected criteria.' });
     }
 
-    console.log('Found target row:', targetRow);
-
-    // --- Build chart data using only year keys ---
     const chartData: ChartDataPoint[] = Object.keys(targetRow)
       .filter((key) => /^\d{4}$/.test(key)) // only 4-digit years
       .map((year) => ({
@@ -114,7 +87,7 @@ app.get('/api/data', (req: Request, res: Response) => {
 });
 
 // --- Start the server ---
-app.listen(5000, "0.0.0.0", () => {
-  console.log("Server running on http://0.0.0.0:5000");
+// --- DEPLOYMENT CHANGE: Removed hardcoded "0.0.0.0" and port ---
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
-

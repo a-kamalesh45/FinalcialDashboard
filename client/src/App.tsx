@@ -16,6 +16,9 @@ import {
 import CustomDropdown from './Components/Dropdown';
 import './App.css';
 
+// --- DEPLOYMENT CHANGE #1: Define the API URL from an environment variable ---
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 interface ChartData {
   year: string;
   value: number;
@@ -119,7 +122,8 @@ const App: React.FC = () => {
       setError(null);
       setChartData([]);
       try {
-        const response = await axios.get<ChartData[]>(`http://localhost:5000/api/data`, {
+        // --- DEPLOYMENT CHANGE #2: Use the API_BASE_URL variable for the request ---
+        const response = await axios.get<ChartData[]>(`${API_BASE_URL}/api/data`, {
           params: { company: selectedCompany, metric: selectedMetric },
         });
         const cleaned = response.data.filter((d) => d.value !== 0);

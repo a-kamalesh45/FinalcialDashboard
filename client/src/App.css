@@ -134,6 +134,7 @@ html,
   color: var(--text-primary);
   text-align: left;
   font-weight: 500;
+  outline: none !important;
 }
 
 .company-btn .company-avatar {
@@ -161,6 +162,7 @@ html,
   border-color: #D1D5DB;
 }
 
+.company-name.active,
 .company-btn.active,
 .metric-btn.active,
 .toggle.on {
@@ -209,6 +211,7 @@ html,
   cursor: pointer;
   font-weight: 600;
   transition: all 180ms ease;
+  outline: none !important;
 }
 
 /* Chart card */

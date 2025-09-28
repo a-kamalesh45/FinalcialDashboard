@@ -44,7 +44,7 @@ app.get('/api/data', (req: Request, res: Response) => {
     //     - data.xls
     //   /src
     //     - index.ts
-    const filePath = path.join(__dirname, '../data/data.xls');
+    const filePath = path.join(__dirname, 'data/data.xls');
     const workbook = xlsx.readFile(filePath);
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];

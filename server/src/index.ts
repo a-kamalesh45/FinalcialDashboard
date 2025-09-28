@@ -32,14 +32,7 @@ app.use(express.json());
 
 
 app.get('/api/data', (req: Request, res: Response) => {
-
-
-  return res.json([
-    { year: '2023', value: 100 },
-    { year: '2024', value: 150 },
-  ]);
-
-
+  
   const { company, metric } = req.query;
 
   if (!company || !metric) {

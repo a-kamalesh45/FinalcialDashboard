@@ -1,0 +1,29 @@
+# Dependencies
+# This is the most important one. It prevents the huge node_modules folder from being tracked.
+/node_modules
+
+# Environment Variables
+# NEVER commit your environment variables. These contain secrets like API keys and database passwords.
+# Instead, create a .env.example file that lists the needed variables without their values.
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build files
+# If you are using a language like TypeScript, these are the compiled output folders.
+/dist
+/build
+
+# Log files
+# Log files are generated during runtime and shouldn't be in version control.
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
